@@ -1,1 +1,353 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fuel Check SL</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Fuel Check">
+    
+    <link rel="apple-touch-icon" href="icon.png">
+
+    <style>
+        :root {
+            --primary-blue: #0096FF;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --input-bg: #ffffff;
+            --input-border: #d1d5db;
+            --success-bg: rgba(34, 197, 94, 0.1);
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            --cal-box: #f3f4f6;
+            --accent-gold: #fbbf24;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --input-bg: #0f172a;
+            --input-border: #334155;
+            --success-bg: rgba(34, 197, 94, 0.2);
+            --danger-bg: rgba(239, 68, 68, 0.2);
+            --cal-box: #475569;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 20px;
+            /* Extra padding for iOS notch if in standalone mode */
+            padding-top: calc(20px + env(safe-area-inset-top));
+            min-height: 100vh;
+            transition: background 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 24px;
+            width: 92%;
+            max-width: 400px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        h1 { margin: 0; font-size: 1.4rem; color: var(--primary-blue); font-weight: 800; }
+        
+        .clock-display {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 1.2rem;
+            text-align: left;
+            font-family: monospace;
+        }
+
+        .top-buttons { display: flex; gap: 8px; }
+        .btn-circle { background: var(--cal-box); color: var(--text-main); border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+        .btn-lang { background: var(--primary-blue); color: white; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 0.8rem; min-width: 75px;}
+
+        .input-label { font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; display: block; }
+
+        .input-wrapper { position: relative; width: 100%; margin-bottom: 1rem; }
+        input {
+            width: 100%;
+            padding: 1rem;
+            background: var(--input-bg);
+            border: 2px solid var(--input-border);
+            border-radius: 16px;
+            color: var(--text-main);
+            font-size: 1.8rem;
+            text-align: center;
+            box-sizing: border-box;
+            font-weight: 800;
+            outline: none;
+            transition: border-color 0.2s;
+            /* Prevents iOS zooming on focus */
+            font-size: 1.8rem; 
+        }
+        input:focus { border-color: var(--primary-blue); }
+        input.complete { border-color: #22c55e; }
+
+        .btn-check {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .status-card {
+            margin-top: 1.2rem;
+            padding: 1rem;
+            border-radius: 16px;
+            display: none;
+            font-weight: 700;
+            animation: slideUp 0.3s ease-out forwards;
+        }
+        .status-card.show { display: block; }
+        .status-msg { font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        
+        .can { background: var(--success-bg); color: #166534; border: 1.5px solid #22c55e; }
+        .cannot { background: var(--danger-bg); color: #991b1b; border: 1.5px solid #ef4444; }
+
+        #nextDatesSection, #calSection { margin-top: 1.5rem; display: none; text-align: left; }
+        #nextDatesSection.show, #calSection.show { display: block; animation: fadeIn 0.4s ease-in; }
+
+        .section-head { font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; color: var(--text-muted); text-transform: uppercase; }
+        
+        .next-dates-list { display: flex; gap: 8px; flex-wrap: wrap; }
+        .next-date-item { 
+            background: var(--cal-box); 
+            padding: 8px 12px; 
+            border-radius: 12px; 
+            font-size: 0.82rem; 
+            font-weight: 700; 
+            color: var(--text-main);
+            border: 1px solid var(--input-border);
+        }
+
+        .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .date-box { 
+            background: var(--cal-box); 
+            padding: 8px 0; 
+            border-radius: 10px; 
+            text-align: center; 
+            font-size: 0.65rem; 
+            color: var(--text-muted); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .date-box b { display: block; font-size: 0.95rem; margin-top: 2px; color: var(--text-main); }
+        .active-date { background: var(--primary-blue) !important; color: white !important; }
+        .active-date b { color: white !important; }
+        .today-mark { border: 2px solid var(--accent-gold); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content {
+            background: var(--card-bg); padding: 1.5rem; border-radius: 20px;
+            width: 85%; max-width: 300px; text-align: center;
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content">
+        <p id="modalMsg" style="font-weight: 600; margin-bottom: 1.2rem;"></p>
+        <button class="btn-check" onclick="closeModal()" id="ui-close-btn">Got it</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="controls-row">
+        <h1 id="ui-title">Fuel Check SL</h1>
+        <div class="top-buttons">
+            <button class="btn-circle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+            <button class="btn-lang" onclick="toggleLang()" id="langBtn">සිංහල</button>
+        </div>
+    </div>
+    
+    <div id="digitalClock" class="clock-display">00:00:00 AM</div>
+
+    <div class="input-section">
+        <span class="input-label" id="ui-input-label">Enter 4 digits of vehicle number:</span>
+        <div class="input-wrapper">
+            <input type="text" id="plateInput" maxlength="4" placeholder="1234" inputmode="numeric" oninput="validateInput(this)">
+        </div>
+        <button class="btn-check" onclick="handleCheck()" id="ui-btn">Check Ability</button>
+    </div>
+
+    <div id="status" class="status-card">
+        <div class="status-msg" id="ui-status-msg"></div>
+    </div>
+
+    <div id="nextDatesSection">
+        <div class="section-head" id="ui-next-head">Next eligible dates:</div>
+        <div class="next-dates-list" id="nextDatesList"></div>
+    </div>
+
+    <div id="calSection">
+        <div class="section-head" id="ui-cal-head">Weekly Overview:</div>
+        <div class="week-grid" id="weekGrid"></div>
+    </div>
+</div>
+
+<script>
+    let currentLangIndex = 0; 
+    const langs = ['en', 'si', 'ta'];
+    
+    const ui = {
+        en: { 
+            inputLabel: "Enter 4 digits of vehicle number:", btn: "Check Ability", 
+            can: "You can get fuel today!", cannot: "You cannot get fuel today.", 
+            head: "Weekly Overview:", next: "Next eligible dates:", 
+            alert: "Please enter exactly 4 digits", close: "Got it",
+            days: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], btnLabel: "සිංහල"
+        },
+        si: { 
+            inputLabel: "අවසාන ඉලක්කම් 4 ඇතුළත් කරන්න:", btn: "පරීක්ෂා කරන්න", 
+            can: "අද ඉන්ධන ලබාගත හැක!", cannot: "අද ඉන්ධන ලබාගත නොහැක.", 
+            head: "සතිපතා දින දර්ශනය:", next: "ඊළඟට අවසර ඇති දින:", 
+            alert: "කරුණාකර ඉලක්කම් 4ම ඇතුළත් කරන්න", close: "තේරුණා",
+            days: ['ඉරිදා','සඳුදා','අඟහ','බදාදා','බ්‍රහස්','සිකු','සෙන'], btnLabel: "தமிழ்"
+        },
+        ta: { 
+            inputLabel: "கடைசி 4 எண்களை இடவும்:", btn: "பரிசோதிக்கவும்", 
+            can: "இன்று நீங்கள் பெறலாம்!", cannot: "இன்று பெற முடியாது.", 
+            head: "வாராந்திர அட்டவணை:", next: "அடுத்த தேதிகள்:", 
+            alert: "தயவுசெய்து 4 எண்களை உள்ளிடவும்", close: "சரி",
+            days: ['ஞாயி','திங்','செவ்','புதன்','வியா','வெள்','சனி'], btnLabel: "English"
+        }
+    };
+
+    function validateInput(el) {
+        el.value = el.value.replace(/[^0-9]/g, '');
+        if(el.value.length === 4) {
+            el.classList.add('complete');
+        } else {
+            el.classList.remove('complete');
+            hideResults();
+        }
+    }
+
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('digitalClock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function hideResults() {
+        document.getElementById('status').classList.remove('show');
+        document.getElementById('nextDatesSection').classList.remove('show');
+        document.getElementById('calSection').classList.remove('show');
+    }
+
+    function showModal() {
+        const trans = ui[langs[currentLangIndex]];
+        document.getElementById('modalMsg').innerText = trans.alert;
+        document.getElementById('ui-close-btn').innerText = trans.close;
+        document.getElementById('modalOverlay').style.display = 'flex';
+    }
+
+    function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
+
+    function toggleTheme() {
+        const current = document.body.getAttribute('data-theme');
+        const next = current === 'light' ? 'dark' : 'light';
+        document.body.setAttribute('data-theme', next);
+        document.getElementById('themeBtn').innerText = next === 'light' ? '🌙' : '☀️';
+    }
+
+    function toggleLang() {
+        currentLangIndex = (currentLangIndex + 1) % langs.length;
+        const trans = ui[langs[currentLangIndex]];
+        document.getElementById('ui-input-label').innerText = trans.inputLabel;
+        document.getElementById('langBtn').innerText = trans.btnLabel;
+        document.getElementById('ui-btn').innerText = trans.btn;
+        document.getElementById('ui-cal-head').innerText = trans.head;
+        document.getElementById('ui-next-head').innerText = trans.next;
+        if(document.getElementById('status').classList.contains('show')) handleCheck();
+    }
+
+    function handleCheck() {
+        const input = document.getElementById('plateInput').value.trim();
+        const trans = ui[langs[currentLangIndex]];
+        if (input.length !== 4) { showModal(); return; }
+
+        const isPlateOdd = parseInt(input.slice(-1)) % 2 !== 0;
+        const now = new Date();
+        const todayDate = now.getDate();
+        const isTodayOdd = todayDate % 2 !== 0;
+        const isMatch = (isPlateOdd === isTodayOdd);
+        
+        const status = document.getElementById('status');
+        document.getElementById('ui-status-msg').innerHTML = isMatch ? `✅ ${trans.can}` : `❌ ${trans.cannot}`;
+        status.className = `status-card show ${isMatch ? 'can' : 'cannot'}`;
+
+        const nextList = document.getElementById('nextDatesList');
+        nextList.innerHTML = '';
+        let found = 0, checkDate = new Date();
+        checkDate.setDate(checkDate.getDate() + 1);
+        while (found < 3) {
+            if ((checkDate.getDate() % 2 !== 0) === isPlateOdd) {
+                const item = document.createElement('div');
+                item.className = 'next-date-item';
+                item.innerText = `${checkDate.getDate()} (${trans.days[checkDate.getDay()]})`;
+                nextList.appendChild(item);
+                found++;
+            }
+            checkDate.setDate(checkDate.getDate() + 1);
+        }
+        document.getElementById('nextDatesSection').classList.add('show');
+
+        const grid = document.getElementById('weekGrid');
+        grid.innerHTML = '';
+        const startOfWeek = now.getDate() - now.getDay();
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(new Date().setDate(startOfWeek + i));
+            const dNum = date.getDate();
+            const box = document.createElement('div');
+            box.className = 'date-box';
+            if (dNum === todayDate) box.classList.add('today-mark');
+            if ((dNum % 2 !== 0) === isPlateOdd) box.classList.add('active-date');
+            box.innerHTML = `<span>${trans.days[i]}</span><b>${dNum}</b>`;
+            grid.appendChild(box);
+        }
+        document.getElementById('calSection').classList.add('show');
+    }
+</script>
+</body>
+</html>
