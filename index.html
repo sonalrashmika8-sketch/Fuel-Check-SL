@@ -234,23 +234,7 @@
             head: "Weekly Overview:", next: "Next eligible dates:", 
             alert: "Please enter exactly 4 digits", close: "Got it",
             days: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], btnLabel: "සිංහල"
-        },
-        si: { 
-            inputLabel: "අවසාන ඉලක්කම් 4 ඇතුළත් කරන්න:", btn: "පරීක්ෂා කරන්න", 
-            can: "අද ඉන්ධන ලබාගත හැක!", cannot: "අද ඉන්ධන ලබාගත නොහැක.", 
-            head: "සතිපතා දින දර්ශනය:", next: "ඊළඟට අවසර ඇති දින:", 
-            alert: "කරුණාකර ඉලක්කම් 4ම ඇතුළත් කරන්න", close: "තේරුණා",
-            days: ['ඉරිදා','සඳුදා','අඟහ','බදාදා','බ්‍රහස්','සිකු','සෙන'], btnLabel: "தமிழ்"
-        },
-        ta: { 
-            inputLabel: "கடைசி 4 எண்களை இடவும்:", btn: "பரிசோதிக்கவும்", 
-            can: "இன்று நீங்கள் பெறலாம்!", cannot: "இன்று பெற முடியாது.", 
-            head: "வாராந்திர அட்டவணை:", next: "அடுத்த தேதிகள்:", 
-            alert: "தயவுசெய்து 4 எண்களை உள்ளிடவும்", close: "சரி",
-            days: ['ஞாயி','திங்','செவ்','புதன்','வியா','வெள்','சனி'], btnLabel: "English"
-        }
-    };
-
+       
     function validateInput(el) {
         el.value = el.value.replace(/[^0-9]/g, '');
         if(el.value.length === 4) {
