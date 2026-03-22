@@ -39,62 +39,62 @@
             margin: 0;
             display: flex;
             justify-content: center;
+            align-items: flex-start; /* Changed from center to allow scrolling */
             min-height: 100vh;
             transition: background 0.5s ease;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .liquid-bg { position: fixed; inset: 0; background: linear-gradient(135deg, var(--bg-top), var(--bg-bottom)); z-index: -1; }
 
         .container {
             margin: 40px 0;
-            width: 92%;
+            width: 90%;
             max-width: 380px;
             background: var(--glass-bg);
             backdrop-filter: blur(45px) saturate(210%);
             -webkit-backdrop-filter: blur(45px) saturate(210%);
-            border-radius: 44px;
-            padding: 2.2rem 1.4rem;
+            border-radius: 40px;
+            padding: 1.8rem 1.4rem;
             border: 1px solid var(--glass-border);
             box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Increased gap to prevent crowding */
+            height: auto; /* Ensure container expands with content */
         }
 
         .top-nav {
             display: flex;
             justify-content: space-between;
             align-items: center; 
-            margin-bottom: 2.5rem;
-            height: 44px; 
+            height: 40px;
         }
 
         .btn-lang-top {
             background: rgba(255,255,255,0.05);
             border: 1px solid var(--glass-border);
             color: var(--text-main);
-            padding: 0 16px;
-            height: 38px;
-            border-radius: 14px;
-            font-size: 0.85rem;
+            padding: 0 14px;
+            height: 36px;
+            border-radius: 12px;
+            font-size: 0.8rem;
             font-weight: 600;
-            display: flex;
-            align-items: center;
         }
 
         .switch {
             position: relative;
-            display: inline-flex;
-            align-items: center;
-            width: 76px; 
-            height: 38px;
+            display: inline-block;
+            width: 68px; 
+            height: 34px;
             background-color: var(--switch-bg);
             border-radius: 20px;
             cursor: pointer;
-            overflow: hidden;
-            transition: 0.3s;
         }
 
         .switch input { display: none; }
-        .switch-ui { width: 100%; height: 100%; display: flex; align-items: center; }
+        .switch-ui { width: 100%; height: 100%; display: flex; align-items: center; position: relative; }
 
         .switch-icons {
             position: absolute;
@@ -102,41 +102,38 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            font-size: 16px;
+            font-size: 14px;
             z-index: 1;
             pointer-events: none;
         }
 
         .slider {
             position: absolute;
-            height: 32px;
-            width: 32px;
+            height: 28px;
+            width: 28px;
             left: 3px;
             background-color: white;
             border-radius: 50%;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 2;
         }
 
-        input:checked + .switch-ui .slider { transform: translateX(38px); }
+        input:checked + .switch-ui .slider { transform: translateX(34px); }
 
-        h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.05em; margin: 0; }
-        .clock { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); margin-bottom: 2rem; }
+        h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.05em; margin: 0; }
+        .clock { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
 
         .input-box {
             background: rgba(0, 0, 0, 0.1);
             border: 1.5px solid var(--glass-border);
-            border-radius: 28px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            transition: all 0.4s ease;
+            border-radius: 24px;
+            padding: 1rem;
+            transition: 0.3s ease;
         }
 
         .input-box.success {
             border-color: var(--success-green);
             background: rgba(52, 199, 89, 0.05);
-            box-shadow: 0 0 20px rgba(52, 199, 89, 0.2);
         }
 
         input {
@@ -144,11 +141,11 @@
             background: transparent;
             border: none;
             color: var(--text-main);
-            font-size: 3.8rem;
+            font-size: 2.8rem;
             font-weight: 800;
             text-align: center;
             outline: none;
-            letter-spacing: 6px;
+            letter-spacing: 4px;
         }
 
         .btn-check {
@@ -156,37 +153,38 @@
             background: var(--primary-blue);
             color: white;
             border: none;
-            padding: 1.2rem;
-            border-radius: 22px;
+            padding: 1.1rem;
+            border-radius: 20px;
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
-            transition: transform 0.2s active;
+            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
         }
         
-        .btn-check:active { transform: scale(0.98); }
+        .btn-check:active { transform: scale(0.97); }
 
         .status-msg {
-            margin-top: 1.8rem;
-            padding: 1.4rem;
-            border-radius: 24px;
+            padding: 1.2rem;
+            border-radius: 20px;
             display: none;
             font-weight: 700;
             text-align: center;
+            font-size: 0.95rem;
         }
 
         .status-msg.show { display: block; animation: slideUp 0.4s ease-out; }
         .can { background: rgba(52, 199, 89, 0.12); color: #34C759; border: 1px solid rgba(52, 199, 89, 0.2); }
         .cannot { background: rgba(255, 59, 48, 0.12); color: #FF3B30; border: 1px solid rgba(255, 59, 48, 0.2); }
 
-        .section-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin: 2rem 0 1rem; }
+        .section-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
         
         .week-bar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-        .day-cell { background: rgba(255,255,255,0.04); border-radius: 12px; padding: 10px 0; text-align: center; position: relative; }
-        .day-cell span { font-size: 0.6rem; color: var(--text-muted); display: block; }
+        .day-cell { background: rgba(255,255,255,0.04); border-radius: 10px; padding: 10px 0; text-align: center; position: relative; }
+        .day-cell span { font-size: 0.55rem; color: var(--text-muted); display: block; margin-bottom: 2px; }
+        .day-cell b { font-size: 0.85rem; }
         .day-active { background: var(--primary-blue) !important; color: white !important; }
         
-        .day-today { border: 2px solid var(--accent-gold); }
+        .day-today { border: 1.5px solid var(--accent-gold); }
         .day-today::after {
             content: "TODAY";
             position: absolute;
@@ -195,21 +193,21 @@
             transform: translateX(-50%);
             background: var(--accent-gold);
             color: black;
-            font-size: 0.5rem;
+            font-size: 0.45rem;
             font-weight: 900;
-            padding: 2px 4px;
-            border-radius: 4px;
+            padding: 1px 4px;
+            border-radius: 3px;
         }
 
-        .date-grid { display: flex; gap: 10px; justify-content: center; }
-        .date-chip { background: var(--glass-bg); padding: 10px 14px; border-radius: 14px; font-size: 0.9rem; font-weight: 700; border: 1px solid var(--glass-border); }
+        .date-grid { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .date-chip { background: var(--glass-bg); padding: 10px 14px; border-radius: 14px; font-size: 0.85rem; font-weight: 700; border: 1px solid var(--glass-border); flex: 1; min-width: 80px; text-align: center; }
 
-        /* User-friendly Popup */
+        /* Modal fixes */
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
             display: none;
             justify-content: center;
             align-items: center;
@@ -218,30 +216,16 @@
         }
         
         .modal {
-            background: var(--glass-bg);
+            background: var(--bg-top);
             border: 1px solid var(--glass-border);
             padding: 2rem;
             border-radius: 32px;
             text-align: center;
-            max-width: 300px;
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        
-        .modal h2 { margin-top: 0; color: #FF3B30; font-size: 1.2rem; }
-        .modal p { color: var(--text-main); font-weight: 500; margin-bottom: 1.5rem; }
-        
-        .btn-modal {
-            background: var(--primary-blue);
-            color: white;
-            border: none;
-            padding: 0.8rem 2rem;
-            border-radius: 16px;
-            font-weight: 700;
-            cursor: pointer;
+            width: 100%;
+            max-width: 280px;
         }
 
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(15px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body data-theme="dark">
@@ -250,9 +234,9 @@
 
 <div class="modal-overlay" id="errorModal">
     <div class="modal">
-        <h2 id="modalHeader">Attention</h2>
-        <p id="modalMsg">Enter 4 Digits Of Vehicle Number</p>
-        <button class="btn-modal" onclick="closeModal()">OK</button>
+        <h2 style="margin:0 0 10px; color:#FF3B30; font-size:1.2rem;">Attention</h2>
+        <p id="modalMsg" style="font-size:0.95rem; margin-bottom:1.5rem;">Enter 4 Digits Of Vehicle Number</p>
+        <button onclick="closeModal()" style="background:var(--primary-blue); color:white; border:none; padding:0.8rem 1.5rem; border-radius:14px; font-weight:700; width:100%;">OK</button>
     </div>
 </div>
 
@@ -268,15 +252,17 @@
         </label>
     </div>
 
-    <h1 id="ui-title">Fuel Check SL</h1>
-    <div id="clock" class="clock">00:00:00 AM</div>
+    <div>
+        <h1 id="ui-title">Fuel Check SL</h1>
+        <div id="clock" class="clock">00:00:00 AM</div>
+    </div>
 
     <div class="input-section">
-        <div class="section-label" style="margin-top:0" id="ui-input-label">Enter last 4 digits</div>
+        <div class="section-label" id="ui-input-label">Enter last 4 digits</div>
         <div id="inputWrapper" class="input-box">
             <input type="text" id="plateInput" maxlength="4" placeholder="0000" inputmode="numeric" oninput="validateInput(this)">
         </div>
-        <button class="btn-check" onclick="handleCheck()" id="ui-btn">Check Eligibility</button>
+        <button class="btn-check" onclick="handleCheck()" id="ui-btn" style="margin-top: 15px;">Check Eligibility</button>
     </div>
 
     <div id="status" class="status-msg"></div>
@@ -285,9 +271,9 @@
         <div class="section-label" id="ui-next-label">Next Open Dates</div>
         <div class="date-grid" id="nextDatesList"></div>
     </div>
-
+    
     <div id="calSec" style="display:none">
-        <div class="section-label" id="ui-cal-label">Weekly Schedule</div>
+        <div class="section-label" id="ui-cal-label">Weekly Schedule</div> <br>
         <div class="week-bar" id="weekGrid"></div>
     </div>
 </div>
@@ -313,7 +299,6 @@
             wrapper.classList.add('success');
         } else {
             wrapper.classList.remove('success');
-            // Reset visibility if user starts re-typing
             document.getElementById('status').classList.remove('show');
             document.getElementById('nextDatesSec').style.display = 'none';
             document.getElementById('calSec').style.display = 'none';
