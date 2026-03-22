@@ -5,388 +5,317 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Fuel Check SL</title>
     
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Fuel Check">
-    
     <style>
         :root {
             --primary-blue: #007AFF;
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --text-main: #ffffff;
-            --text-muted: rgba(255, 255, 255, 0.5);
-            --accent-gold: #FFD60A;
             --success-green: #32D74B;
+            --danger-red: #FF453A;
+            --accent-gold: #FFD60A;
             --bg-top: #000000;
             --bg-bottom: #1c1c1e;
-            --card-outline: rgba(255, 255, 255, 0.08);
-            --modal-bg: #1c1c1e;
+            --card-bg: rgba(28, 28, 30, 0.7);
+            --input-bg: rgba(44, 44, 46, 0.8);
+            --text-main: #ffffff;
+            --text-muted: #8e8e93;
+            --border: rgba(58, 58, 60, 0.5);
         }
 
         [data-theme="light"] {
-            --bg-top: #ffffff;
-            --bg-bottom: #f2f2f7;
+            --bg-top: #f2f2f7;
+            --bg-bottom: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --input-bg: rgba(242, 242, 247, 0.8);
             --text-main: #000000;
-            --text-muted: rgba(0, 0, 0, 0.6);
-            --glass-bg: #ffffff;
-            --glass-border: rgba(0, 0, 0, 0.1);
-            --card-outline: rgba(0, 0, 0, 0.06);
-            --modal-bg: #ffffff;
+            --text-muted: #636366;
+            --border: rgba(209, 209, 214, 0.5);
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
             background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+            background-attachment: fixed;
             color: var(--text-main);
             margin: 0;
             display: flex;
             justify-content: center;
             min-height: 100vh;
-            padding-top: calc(20px + env(safe-area-inset-top));
-            padding-bottom: env(safe-area-inset-bottom);
-            -webkit-tap-highlight-color: transparent;
+            /* Mobile safe areas optimization */
+            padding: env(safe-area-inset-top, 20px) 0 env(safe-area-inset-bottom, 20px) 0;
             overflow-x: hidden;
-            transition: all 0.3s ease;
         }
 
-        .app-container {
-            width: 100%;
-            max-width: 420px;
-            padding: 24px;
-            box-sizing: border-box;
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        .header {
+        .app-container { 
+            width: 100%; 
+            max-width: 414px; 
+            padding: 15px; 
+            box-sizing: border-box; 
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
+            flex-direction: column;
         }
 
-        .title { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; white-space: nowrap; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .title { font-size: 24px; font-weight: 700; }
+        .controls { display: flex; gap: 8px; align-items: center; }
         
-        /* space for your logo image */
-        .header-logo {
-            width: 50px; height: 50px; margin: 0 15px;
-            background: url('YOUR_LOGO_URL_HERE') no-repeat center;
-            background-size: contain;
-            display: none; /* Hide if no URL */
-        }
-
-        .top-controls { display: flex; gap: 12px; align-items: center; }
-
-        .theme-switch {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 18px;
-        }
-        [data-theme="light"] .theme-switch { background: rgba(0,0,0,0.05); }
-
-        .lang-switch {
-            background: rgba(120, 120, 128, 0.16);
-            border-radius: 20px;
-            padding: 3px;
+        .theme-btn { 
+            cursor: pointer; 
+            background: var(--card-bg); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 8px 10px; 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             display: flex;
+            align-items: center;
         }
 
-        .lang-btn {
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            padding: 6px 12px;
-            border-radius: 17px;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-        }
+        .lang-switch { background: rgba(120, 120, 128, 0.16); border-radius: 20px; padding: 3px; display: flex; }
+        .lang-btn { border: none; background: transparent; color: var(--text-muted); padding: 6px 12px; border-radius: 17px; font-size: 12px; font-weight: 600; cursor: pointer; -webkit-tap-highlight-color: transparent; }
         .lang-btn.active { background: var(--primary-blue); color: white; }
 
         .main-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid var(--glass-border);
-            border-radius: 32px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            text-align: center;
+            background: var(--card-bg); border-radius: 35px; padding: 30px 20px;
+            text-align: center; border: 1px solid var(--border); 
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.5);
         }
 
-        .clock {
-            font-size: 14px;
-            color: var(--primary-blue);
-            font-weight: 600;
-            margin-bottom: 25px;
-            letter-spacing: 1px;
-        }
+        #clock { cursor: pointer; transition: transform 0.2s; -webkit-tap-highlight-color: transparent; }
+        #clock:active { transform: scale(0.95); }
 
         input {
-            width: 100%;
-            background: rgba(120, 120, 128, 0.1);
-            border: 2px solid transparent;
-            border-radius: 20px;
-            padding: 20px;
+            width: 100%; background: var(--input-bg); color: var(--text-main);
+            border-radius: 24px; border: 2px solid transparent; padding: 20px 0;
+            font-size: 50px; font-weight: 800; text-align: center; margin-bottom: 20px; 
+            letter-spacing: 8px; outline: none; appearance: none; -webkit-appearance: none;
             box-sizing: border-box;
-            color: var(--text-main);
-            font-size: 38px;
-            font-weight: 800;
-            text-align: center;
-            outline: none;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-            letter-spacing: 8px;
         }
-        input:focus { border-color: var(--primary-blue); background: rgba(120, 120, 128, 0.15); }
-        input.error { animation: shake 0.4s ease; border-color: #FF453A; }
+        input.complete { border-color: var(--success-green); color: var(--success-green); }
 
-        .btn-main {
+        .btn-check {
+            width: 100%; background: var(--primary-blue); color: white; border: none;
+            border-radius: 20px; padding: 18px; font-size: 18px; font-weight: 700; 
+            cursor: pointer; -webkit-tap-highlight-color: transparent;
+        }
+        .btn-check:active { opacity: 0.8; }
+
+        .status-box { margin-top: 20px; padding: 18px; border-radius: 20px; font-weight: 700; display: none; font-size: 15px; }
+        
+        .section-header { font-size: 12px; font-weight: 600; color: var(--text-muted); margin: 30px 0 12px 5px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .date-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 18px; padding: 15px; font-weight: 700; text-align: center; font-size: 14px; }
+
+        .week-grid { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            gap: 4px; 
+            align-items: end; 
             width: 100%;
-            background: var(--primary-blue);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 20px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: transform 0.2s ease;
         }
-        .btn-main:active { transform: scale(0.97); }
-
-        .status-msg {
-            margin-top: 25px;
-            padding: 20px;
-            border-radius: 22px;
-            font-weight: 700;
-            display: none;
-            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .status-msg.show { display: block; }
-        .can { background: rgba(50, 215, 75, 0.15); color: #32D74B; border: 1px solid rgba(50, 215, 75, 0.3); }
-        .cannot { background: rgba(255, 69, 58, 0.15); color: #FF453A; border: 1px solid rgba(255, 69, 58, 0.3); }
-
-        /* Modal / Popup */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
-            display: none; align-items: center; justify-content: center; z-index: 2000;
-        }
-        .modal {
-            background: var(--modal-bg);
-            border: 1px solid var(--glass-border);
-            width: 85%; max-width: 320px;
-            padding: 30px; border-radius: 28px; text-align: center;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
-        }
-        .modal h3 { margin: 0 0 10px 0; font-size: 20px; }
-        .modal p { color: var(--text-muted); font-size: 15px; margin-bottom: 20px; }
-        .modal-btn {
-            background: var(--primary-blue); color: white; border: none;
-            width: 100%; padding: 15px; border-radius: 15px; font-weight: 700; cursor: pointer;
-        }
-
-        /* Animations */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-8px); }
-            75% { transform: translateX(8px); }
-        }
-
-        .section { margin-top: 35px; display: none; }
-        .section.show { display: block; animation: fadeIn 0.8s ease; }
-        .section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .day-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .today-label { font-size: 7px; font-weight: 800; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 0.5px; opacity: 0; }
+        .day-wrapper.is-today .today-label { opacity: 1; }
         
-        /* NEXT DATES - removed sliding, made static chips */
-        .date-list { display: flex; gap: 10px; flex-wrap: wrap; }
-        .date-chip { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 12px 18px; border-radius: 15px; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
-        [data-theme="light"] .date-chip { background: white; }
-
-        /* WEEKLY SCHEDULE - matches image 2nd */
-        .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-        .day-cell {
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 14px;
-            padding: 12px 0;
-            font-size: 10px;
-            color: var(--text-muted);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
+        .day-box { 
+            width: 100%; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; 
+            padding: 8px 0; text-align: center; font-size: 9px; color: var(--text-muted); 
+            transition: all 0.3s ease; position: relative; box-sizing: border-box;
         }
-        [data-theme="light"] .day-cell { background: white; }
-        .day-cell b { font-size: 15px; color: var(--text-main); margin-top: 4px; }
-        
-        .day-today { border: 2px solid var(--accent-gold); }
-        .day-today::before {
-            content: attr(data-today);
-            position: absolute;
-            top: -10px;
-            background: var(--accent-gold);
-            color: black;
-            font-size: 7px;
-            font-weight: 900;
-            padding: 1px 5px;
-            border-radius: 4px;
-        }
-        
-        .day-active { background: var(--primary-blue); color: white; border: none; }
-        .day-active b { color: white; }
+        .day-box b { display: block; font-size: 13px; color: var(--text-main); margin-top: 2px; }
+        .day-box.active { background: var(--primary-blue); color: rgba(255,255,255,0.8); border: none; }
+        .day-box.active b { color: white; }
+        .day-wrapper.is-today .day-box { border: 2px solid var(--accent-gold); transform: scale(1.05); }
 
+        /* Overlays optimized for mobile touch */
+        .full-overlay, .analog-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            display: none; justify-content: center; align-items: center; z-index: 3000;
+            padding: 20px; box-sizing: border-box;
+        }
+        .full-overlay { background: rgba(0,0,0,0.6); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
+        .analog-overlay { background: rgba(0,0,0,0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); }
+
+        .modal-content { background: var(--card-bg); padding: 30px; border-radius: 30px; width: 100%; max-width: 320px; text-align: center; border: 1px solid var(--border); }
+        
+        .clock-face { 
+            width: min(280px, 70vw); 
+            height: min(280px, 70vw); 
+            border: 6px solid white; 
+            border-radius: 50%; 
+            position: relative; 
+            box-shadow: 0 0 30px rgba(0,0,0,0.5); 
+        }
+        .hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom; background: white; border-radius: 4px; transform: translateX(-50%); }
+        .hour { width: 6px; height: 22%; z-index: 3; }
+        .minute { width: 4px; height: 35%; z-index: 2; }
+        .second { width: 2px; height: 40%; background: var(--danger-red); z-index: 1; }
+        .center-dot { position: absolute; top: 50%; left: 50%; width: 12px; height: 12px; background: white; border-radius: 50%; transform: translate(-50%, -50%); z-index: 4; }
+
+        @media (max-width: 360px) {
+            .title { font-size: 20px; }
+            input { font-size: 40px; padding: 15px 0; }
+            .day-box b { font-size: 11px; }
+        }
     </style>
 </head>
 <body data-theme="dark">
 
-<div class="modal-overlay" id="alertModal">
-    <div class="modal">
-        <h3 id="modal-title">⚠️ Invalid Number</h3>
-        <p id="modal-body">Please enter all 4 digits of your vehicle number.</p>
-        <button class="modal-btn" onclick="closeModal()">Got it</button>
+<div class="analog-overlay" id="analogOverlay" onclick="this.style.display='none'">
+    <div class="clock-face">
+        <div class="hand hour" id="hourHand"></div>
+        <div class="hand minute" id="minHand"></div>
+        <div class="hand second" id="secHand"></div>
+        <div class="center-dot"></div>
+    </div>
+</div>
+
+<div class="full-overlay" id="fullOverlay" onclick="closeOverlay()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h3 id="modalTitle" style="color:var(--danger-red); margin:0 0 10px 0;">Invalid Number</h3>
+        <p id="modalMsg" style="margin-bottom: 25px; color: var(--text-muted); font-size: 15px;"></p>
+        <button class="btn-check" onclick="closeOverlay()">OK</button>
     </div>
 </div>
 
 <div class="app-container">
     <div class="header">
         <div class="title">Fuel Check SL</div>
-        
-        <div class="header-logo"></div>
-        
-        <div class="top-controls">
-            <div class="theme-switch" onclick="toggleTheme()" id="t-btn">🌙</div>
+        <div class="controls">
+            <div class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</div>
             <div class="lang-switch">
-                <button class="lang-btn active" onclick="setLang('en')" id="btn-en">EN</button>
-                <button class="lang-btn" onclick="setLang('si')" id="btn-si">සිං</button>
-                <button class="lang-btn" onclick="setLang('ta')" id="btn-ta">தழ்</button>
+                <button class="lang-btn active" id="l-en" onclick="setLang('en')">EN</button>
+                <button class="lang-btn" id="l-si" onclick="setLang('si')">සිං</button>
+                <button class="lang-btn" id="l-ta" onclick="setLang('ta')">தமிழ்</button>
             </div>
         </div>
     </div>
 
     <div class="main-card">
-        <div id="clock" class="clock">00:00:00 AM</div>
-        <input type="text" id="plateInput" placeholder="••••" inputmode="numeric" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, ''); hideStatus();">
-        <button class="btn-main" onclick="check()">
-            <span></span> <span id="btn-text">Check</span>
-        </button>
-        <div id="status" class="status-msg"></div>
+        <div id="clock" onclick="showAnalog()" style="color:var(--primary-blue); font-weight:600; font-size:14px; margin-bottom:20px;">00:00:00 AM</div>
+        <input type="text" id="plateInput" placeholder="0000" maxlength="4" inputmode="numeric" oninput="handleInput(this)">
+        <button class="btn-check" onclick="check()" id="btn-text">Check Eligibility</button>
+        <div class="status-box" id="status-box"></div>
     </div>
 
-    <div id="nextDatesSec" class="section">
-        <div class="section-title"><span>📅</span> <span id="lbl-next">Next Eligible Dates</span></div>
-        <div class="date-list" id="nextDatesList"></div>
-    </div>
-
-    <div id="calSec" class="section">
-        <div class="section-title"><span>🗓️</span> <span id="lbl-cal">Weekly Schedule</span></div>
-        <div class="week-grid" id="weekGrid"></div>
+    <div id="results" style="display:none;">
+        <div class="section-header" id="lbl-next">📅 Next Eligible Dates</div>
+        <div class="date-grid" id="date-list"></div>
+        <div class="section-header" id="lbl-sch">🗓️ Weekly Schedule</div>
+        <div class="week-grid" id="week-list"></div>
     </div>
 </div>
 
 <script>
     let lang = 'en';
     const ui = {
-        en: { check: "Check", can: "Eligible for fuel today!", cannot: "Not eligible today.", next: "Next Eligible Dates", cal: "Weekly Schedule", today: "TODAY", modalT: "Invalid Number", modalB: "Please enter the last 4 digits of your vehicle registration number.", days: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] },
-        si: { check: "පරීක්ෂා කරන්න", can: "අද දින ලබාගත හැක!", cannot: "අද දින ලබාගත නොහැක.", next: "මීළඟ දින", cal: "සතිපතා කාලසටහන", today: "අද", modalT: "වැරදි අංකයකි", modalB: "කරුණාකර ඔබගේ වාහන අංකයේ අවසාන ඉලක්කම් 4ම ඇතුළත් කරන්න.", days: ['ඉරිදා','සඳුදා','අඟහ','බදාදා','බ්‍රහස්','සිකු','සෙන'] },
-        ta: { check: "பரிசோதிக்கவும்", can: "இன்று பெறலாம்!", cannot: "இன்று பெற முடியாது.", next: "அடுத்த தேதிகள்", cal: "வாராந்திர அட்டவணை", today: "இன்று", modalT: "தவறான எண்", modalB: "உங்கள் வாகனப் பதிவு எண்ணின் கடைசி 4 இலக்கங்களை உள்ளிடவும்.", days: ['ஞாயி','திங்','செவ்','புதன்','வியா','வெள்','சனி'] }
+        en: { today: "Today", check: "Check Eligibility", next: "Next Eligible Dates", sch: "Weekly Schedule", can: "✓ Eligible for fuel today!", cannot: "✕ Not eligible today.", errT: "Invalid Number", errM: "Enter all 4 digits.", days:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] },
+        si: { today: "අද", check: "පරීක්ෂා කරන්න", next: "මීළඟ දින", sch: "සතිපතා කාලසටහන", can: "✓ අද ලබාගත හැක!", cannot: "✕ අද ලබාගත නොහැක.", errT: "වැරදි අංකයකි", errM: "ඉලක්කම් 4ම ඇතුළත් කරන්න.", days:['ඉරිදා','සඳුදා','අඟහ','බදාදා','බ්‍රහස්','සිකු','සෙන'] },
+        ta: { today: "இன்று", check: "சரிபார்க்கவும்", next: "அடுத்த தேதிகள்", sch: "வாராந்திர அட்டவணை", can: "✓ இன்று பெறலாம்!", cannot: "✕ இன்று தகுதியில்லை.", errT: "தவறான எண்", errM: "4 இலக்கங்களையும் உள்ளிடவும்.", days:['ஞා','தி','செ','பு','වි','வெ','ச'] }
     };
 
-    function updateClock() {
-        document.getElementById('clock').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+    function handleInput(input) {
+        input.value = input.value.replace(/[^0-9]/g, '');
+        input.classList.toggle('complete', input.value.length === 4);
+        if (input.value.length < 4) {
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('status-box').style.display = 'none';
+        }
     }
-    setInterval(updateClock, 1000); updateClock();
+
+    function showAnalog() {
+        document.getElementById('analogOverlay').style.display = 'flex';
+        updateAnalog();
+    }
+
+    function updateAnalog() {
+        const now = new Date();
+        const hr = now.getHours();
+        const min = now.getMinutes();
+        const sec = now.getSeconds();
+
+        document.getElementById('hourHand').style.transform = `translateX(-50%) rotate(${(hr * 30) + (min / 2)}deg)`;
+        document.getElementById('minHand').style.transform = `translateX(-50%) rotate(${min * 6}deg)`;
+        document.getElementById('secHand').style.transform = `translateX(-50%) rotate(${sec * 6}deg)`;
+    }
+
+    setInterval(() => {
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString([], { hour12: true });
+        if(document.getElementById('analogOverlay').style.display === 'flex') updateAnalog();
+    }, 1000);
 
     function toggleTheme() {
-        const body = document.body;
-        const current = body.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        body.setAttribute('data-theme', next);
-        document.getElementById('t-btn').innerText = next === 'dark' ? '🌙' : '☀️';
+        const isDark = document.body.getAttribute('data-theme') === 'dark';
+        document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        document.getElementById('themeBtn').innerText = isDark ? '☀️' : '🌙';
     }
 
     function setLang(l) {
         lang = l;
-        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(`btn-${l}`).classList.add('active');
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.id === `l-${l}`));
         document.getElementById('btn-text').innerText = ui[l].check;
-        document.getElementById('lbl-next').innerText = ui[l].next;
-        document.getElementById('lbl-cal').innerText = ui[l].cal;
-        if(document.getElementById('status').classList.contains('show')) check();
+        document.getElementById('lbl-next').innerText = "📅 " + ui[l].next;
+        document.getElementById('lbl-sch').innerText = "🗓️ " + ui[l].sch;
+        
+        const val = document.getElementById('plateInput').value;
+        if(val.length === 4) {
+            const isOdd = parseInt(val.slice(-1)) % 2 !== 0;
+            const todayMatch = (new Date().getDate() % 2 !== 0) === isOdd;
+            const status = document.getElementById('status-box');
+            status.innerText = todayMatch ? ui[lang].can : ui[lang].cannot;
+            renderResults(isOdd);
+        }
     }
 
-    function closeModal() { document.getElementById('alertModal').style.display = 'none'; }
-    function hideStatus() { document.getElementById('status').classList.remove('show'); document.getElementById('plateInput').classList.remove('error'); }
+    function closeOverlay() { document.getElementById('fullOverlay').style.display = 'none'; }
 
     function check() {
-        const input = document.getElementById('plateInput');
-        const val = input.value;
-        
-        if(val.length !== 4) {
-            input.classList.add('error');
-            document.getElementById('modal-title').innerText = ui[lang].modalT;
-            document.getElementById('modal-body').innerText = ui[lang].modalB;
-            document.getElementById('alertModal').style.display = 'flex';
+        const val = document.getElementById('plateInput').value;
+        if (val.length < 4) {
+            document.getElementById('modalMsg').innerText = ui[lang].errM;
+            document.getElementById('fullOverlay').style.display = 'flex';
             return;
         }
-
         const isOdd = parseInt(val.slice(-1)) % 2 !== 0;
-        const today = new Date();
-        const matches = (today.getDate() % 2 !== 0) === isOdd;
-        const t = ui[lang];
+        const todayMatch = (new Date().getDate() % 2 !== 0) === isOdd;
+        const status = document.getElementById('status-box');
+        status.style.display = 'block';
+        status.innerText = todayMatch ? ui[lang].can : ui[lang].cannot;
+        status.style.background = todayMatch ? 'rgba(50, 215, 75, 0.15)' : 'rgba(255, 69, 58, 0.15)';
+        status.style.color = todayMatch ? '#32D74B' : '#FF453A';
+        document.getElementById('results').style.display = 'block';
+        renderResults(isOdd);
+        // Scroll to results on mobile
+        setTimeout(() => {
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+    }
 
-        const status = document.getElementById('status');
-        status.innerText = matches ? `✓ ${t.can}` : `✕ ${t.cannot}`;
-        status.className = `status-msg show ${matches ? 'can' : 'cannot'}`;
-
-        // NEXT DATES - static chips
-        const nextList = document.getElementById('nextDatesList');
-        nextList.innerHTML = '';
-        let found = 0, d = new Date(); d.setDate(d.getDate() + 1);
-        while (found < 4) {
-            if ((d.getDate() % 2 !== 0) === isOdd) {
-                const chip = document.createElement('div');
-                chip.className = 'date-chip';
-                chip.innerText = `${d.getDate()} ${t.days[d.getDay()]}`;
-                nextList.appendChild(chip); found++;
-            }
+    function renderResults(isOdd) {
+        const dateList = document.getElementById('date-list');
+        const weekList = document.getElementById('week-list');
+        dateList.innerHTML = ''; weekList.innerHTML = '';
+        let d = new Date(), found = 0;
+        while(found < 4) {
             d.setDate(d.getDate() + 1);
-        }
-        document.getElementById('nextDatesSec').classList.add('show');
-
-        // WEEKLY SCHEDULE - last 7 days static grid
-        const grid = document.getElementById('weekGrid');
-        grid.innerHTML = '';
-        
-        for (let i = 0; i < 7; i++) {
-            const date = new Date();
-            // Go back 6 days from today (i=0 is 6 days ago, i=6 is today)
-            date.setDate(date.getDate() - (6 - i)); 
-            const dNum = date.getDate();
-            const box = document.createElement('div');
-            box.className = 'day-cell';
-            
-            // Highlight Today (matches image 2)
-            if (dNum === today.getDate()) {
-                box.classList.add('day-today');
-                box.setAttribute('data-today', t.today);
+            if((d.getDate() % 2 !== 0) === isOdd) {
+                dateList.innerHTML += `<div class="date-card">${d.getDate()} ${ui[lang].days[d.getDay()]}</div>`;
+                found++;
             }
-            
-            // Highlight eligibility (matches image 2)
-            if ((dNum % 2 !== 0) === isOdd) box.classList.add('day-active');
-            
-            box.innerHTML = `<span>${t.days[date.getDay()]}</span><b>${dNum}</b>`;
-            grid.appendChild(box);
         }
-        document.getElementById('calSec').classList.add('show');
+        let temp = new Date(); temp.setDate(temp.getDate() - 3);
+        for(let i = 0; i < 7; i++) {
+            const isToday = temp.toDateString() === new Date().toDateString();
+            const isActive = (temp.getDate() % 2 !== 0) === isOdd;
+            weekList.innerHTML += `
+                <div class="day-wrapper ${isToday ? 'is-today' : ''}">
+                    <span class="today-label">${ui[lang].today}</span>
+                    <div class="day-box ${isActive ? 'active' : ''}">
+                        ${ui[lang].days[temp.getDay()]}<b>${temp.getDate()}</b>
+                    </div>
+                </div>`;
+            temp.setDate(temp.getDate() + 1);
+        }
     }
 </script>
 </body>
