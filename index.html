@@ -14,17 +14,17 @@
     <style>
         :root {
             --primary-blue: #0096FF;
-            --bg-color: #0f172a; /* Default to Dark */
-            --card-bg: #1e293b; /* Default to Dark */
-            --text-main: #f8fafc; /* Default to Dark */
-            --text-muted: #94a3b8; /* Default to Dark */
-            --input-bg: #0f172a; /* Default to Dark */
-            --input-border: #334155; /* Default to Dark */
+            --bg-color: #0f172a; 
+            --card-bg: #1e293b; 
+            --text-main: #f8fafc; 
+            --text-muted: #94a3b8; 
+            --input-bg: #0f172a; 
+            --input-border: #334155; 
             --success-bg: rgba(34, 197, 94, 0.2);
             --danger-bg: rgba(239, 68, 68, 0.2);
             --cal-box: #475569;
             --accent-gold: #fbbf24;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
         [data-theme="light"] {
@@ -37,7 +37,7 @@
             --success-bg: rgba(34, 197, 94, 0.1);
             --danger-bg: rgba(239, 68, 68, 0.1);
             --cal-box: #f3f4f6;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
         body {
@@ -48,140 +48,187 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding-top: calc(20px + env(safe-area-inset-top));
+            padding-top: calc(40px + env(safe-area-inset-top));
             min-height: 100vh;
-            transition: background 0.3s ease;
+            transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
         }
 
+        /* --- New Entrance Animation --- */
         .container {
             background: var(--card-bg);
-            padding: 1.5rem;
-            border-radius: 24px;
+            padding: 2rem 1.5rem;
+            border-radius: 28px;
             width: 92%;
             max-width: 400px;
             box-shadow: var(--shadow);
             text-align: center;
             box-sizing: border-box;
+            animation: containerEntry 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
         }
 
-        .controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        h1 { margin: 0; font-size: 1.4rem; color: var(--primary-blue); font-weight: 800; }
+        @keyframes containerEntry {
+            from { opacity: 0; transform: scale(0.9) translateY(30px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        h1 { margin: 0; font-size: 1.4rem; color: var(--primary-blue); font-weight: 800; letter-spacing: -0.5px; }
         
         .clock-display {
             font-size: 1rem;
             font-weight: 700;
             color: var(--text-muted);
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.5rem;
             text-align: left;
-            font-family: monospace;
+            font-family: 'Courier New', monospace;
+            opacity: 0.8;
         }
 
-        .top-buttons { display: flex; gap: 8px; }
-        .btn-circle { background: var(--cal-box); color: var(--text-main); border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
-        .btn-lang { background: var(--primary-blue); color: white; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 0.8rem; min-width: 75px;}
+        .top-buttons { display: flex; gap: 10px; }
+        .btn-circle { background: var(--cal-box); color: var(--text-main); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: transform 0.2s; }
+        .btn-circle:active { transform: scale(0.9); }
+        
+        .btn-lang { background: var(--primary-blue); color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: all 0.3s ease; }
+        .btn-lang:hover { filter: brightness(1.1); }
 
-        .input-label { font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; display: block; }
+        .input-label { font-size: 0.95rem; font-weight: 600; margin-bottom: 12px; display: block; opacity: 0.9; }
 
-        .input-wrapper { position: relative; width: 100%; margin-bottom: 1rem; }
+        .input-wrapper { position: relative; width: 100%; margin-bottom: 1.5rem; }
         input {
             width: 100%;
-            padding: 1rem;
+            padding: 1.2rem;
             background: var(--input-bg);
             border: 2px solid var(--input-border);
-            border-radius: 16px;
+            border-radius: 20px;
             color: var(--text-main);
-            font-size: 1.8rem;
+            font-size: 2.2rem;
             text-align: center;
             box-sizing: border-box;
             font-weight: 800;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        input:focus { border-color: var(--primary-blue); }
-        input.complete { border-color: #22c55e; }
+        input:focus { border-color: var(--primary-blue); box-shadow: 0 0 15px rgba(0, 150, 255, 0.3); transform: translateY(-2px); }
+        input.complete { border-color: #22c55e; color: #22c55e; }
 
         .btn-check {
             width: 100%;
-            padding: 1rem;
+            padding: 1.1rem;
             background: var(--primary-blue);
             color: white;
             border: none;
-            border-radius: 16px;
+            border-radius: 20px;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 1.1rem;
             cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 150, 255, 0.3);
         }
+        .btn-check:active { transform: scale(0.97); }
 
+        /* --- Animated Status Cards --- */
         .status-card {
-            margin-top: 1.2rem;
-            padding: 1rem;
-            border-radius: 16px;
+            margin-top: 1.5rem;
+            padding: 1.2rem;
+            border-radius: 20px;
             display: none;
             font-weight: 700;
-            animation: slideUp 0.3s ease-out forwards;
+            overflow: hidden;
+            position: relative;
         }
-        .status-card.show { display: block; }
-        .status-msg { font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .status-card.show { 
+            display: block; 
+            animation: slideBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
         
-        .can { background: var(--success-bg); color: #4ade80; border: 1.5px solid #22c55e; }
-        .cannot { background: var(--danger-bg); color: #f87171; border: 1.5px solid #ef4444; }
+        @keyframes slideBounce {
+            from { opacity: 0; transform: translateY(20px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
 
-        #nextDatesSection, #calSection { margin-top: 1.5rem; display: none; text-align: left; }
-        #nextDatesSection.show, #calSection.show { display: block; animation: fadeIn 0.4s ease-in; }
-
-        .section-head { font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; color: var(--text-muted); text-transform: uppercase; }
+        .status-msg { font-size: 1.2rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
         
-        .next-dates-list { display: flex; gap: 8px; flex-wrap: wrap; }
+        .can { background: var(--success-bg); color: #4ade80; border: 2px solid #22c55e; box-shadow: 0 0 20px rgba(34, 197, 94, 0.2); }
+        .cannot { background: var(--danger-bg); color: #f87171; border: 2px solid #ef4444; }
+
+        /* --- Staggered Reveal for Sections --- */
+        #nextDatesSection.show, #calSection.show { 
+            display: block; 
+            animation: fadeIn 0.6s ease-out; 
+        }
+
+        .section-head { font-size: 0.85rem; font-weight: 700; margin-bottom: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 1.5rem; }
+        
+        .next-dates-list { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
         .next-date-item { 
             background: var(--cal-box); 
-            padding: 8px 12px; 
-            border-radius: 12px; 
-            font-size: 0.82rem; 
+            padding: 10px 14px; 
+            border-radius: 14px; 
+            font-size: 0.85rem; 
             font-weight: 700; 
-            color: var(--text-main);
             border: 1px solid var(--input-border);
+            animation: popIn 0.4s both;
         }
 
-        .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
         .date-box { 
             background: var(--cal-box); 
-            padding: 8px 0; 
-            border-radius: 10px; 
-            text-align: center; 
-            font-size: 0.65rem; 
-            color: var(--text-muted); 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 10px 0; 
+            border-radius: 12px; 
+            transition: all 0.3s;
         }
-        .date-box b { display: block; font-size: 0.95rem; margin-top: 2px; color: var(--text-main); }
-        .active-date { background: var(--primary-blue) !important; color: white !important; }
-        .active-date b { color: white !important; }
-        .today-mark { border: 2px solid var(--accent-gold); }
+        .date-box span { font-size: 0.6rem; text-transform: uppercase; }
+        .date-box b { display: block; font-size: 1rem; margin-top: 2px; }
+        
+        .active-date { 
+            background: var(--primary-blue) !important; 
+            color: white !important; 
+            transform: translateY(-3px);
+            box-shadow: 0 5px 12px rgba(0, 150, 255, 0.4);
+        }
+        .today-mark { border: 2px solid var(--accent-gold); position: relative; }
+        .today-mark::after {
+            content: ''; position: absolute; top: -5px; right: -5px; width: 10px; height: 10px;
+            background: var(--accent-gold); border-radius: 50%; animation: pulse 1.5s infinite;
+        }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(251, 191, 36, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
+        }
+
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
             display: none;
             justify-content: center; align-items: center; z-index: 1000;
         }
         .modal-content {
-            background: var(--card-bg); padding: 1.5rem; border-radius: 20px;
-            width: 85%; max-width: 300px; text-align: center;
+            background: var(--card-bg); padding: 2rem; border-radius: 24px;
+            width: 85%; max-width: 320px; text-align: center;
+            animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
+        @keyframes modalPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body data-theme="dark">
 
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal-content">
-        <p id="modalMsg" style="font-weight: 600; margin-bottom: 1.2rem;"></p>
+        <p id="modalMsg" style="font-weight: 600; margin-bottom: 1.5rem; font-size: 1.1rem;"></p>
         <button class="btn-check" onclick="closeModal()" id="ui-close-btn">Got it</button>
     </div>
 </div>
@@ -209,12 +256,12 @@
         <div class="status-msg" id="ui-status-msg"></div>
     </div>
 
-    <div id="nextDatesSection">
+    <div id="nextDatesSection" style="display:none">
         <div class="section-head" id="ui-next-head">Next eligible dates:</div>
         <div class="next-dates-list" id="nextDatesList"></div>
     </div>
 
-    <div id="calSection">
+    <div id="calSection" style="display:none">
         <div class="section-head" id="ui-cal-head">Weekly Overview:</div>
         <div class="week-grid" id="weekGrid"></div>
     </div>
@@ -267,8 +314,8 @@
 
     function hideResults() {
         document.getElementById('status').classList.remove('show');
-        document.getElementById('nextDatesSection').classList.remove('show');
-        document.getElementById('calSection').classList.remove('show');
+        document.getElementById('nextDatesSection').style.display = 'none';
+        document.getElementById('calSection').style.display = 'none';
     }
 
     function showModal() {
@@ -309,40 +356,49 @@
         const isTodayOdd = todayDate % 2 !== 0;
         const isMatch = (isPlateOdd === isTodayOdd);
         
+        // Results reset
         const status = document.getElementById('status');
-        document.getElementById('ui-status-msg').innerHTML = isMatch ? `✅ ${trans.can}` : `❌ ${trans.cannot}`;
-        status.className = `status-card show ${isMatch ? 'can' : 'cannot'}`;
+        status.classList.remove('show');
+        
+        setTimeout(() => {
+            document.getElementById('ui-status-msg').innerHTML = isMatch ? `✅ ${trans.can}` : `❌ ${trans.cannot}`;
+            status.className = `status-card show ${isMatch ? 'can' : 'cannot'}`;
 
-        const nextList = document.getElementById('nextDatesList');
-        nextList.innerHTML = '';
-        let found = 0, checkDate = new Date();
-        checkDate.setDate(checkDate.getDate() + 1);
-        while (found < 3) {
-            if ((checkDate.getDate() % 2 !== 0) === isPlateOdd) {
-                const item = document.createElement('div');
-                item.className = 'next-date-item';
-                item.innerText = `${checkDate.getDate()} (${trans.days[checkDate.getDay()]})`;
-                nextList.appendChild(item);
-                found++;
-            }
+            const nextList = document.getElementById('nextDatesList');
+            nextList.innerHTML = '';
+            let found = 0, checkDate = new Date();
             checkDate.setDate(checkDate.getDate() + 1);
-        }
-        document.getElementById('nextDatesSection').classList.add('show');
+            while (found < 3) {
+                if ((checkDate.getDate() % 2 !== 0) === isPlateOdd) {
+                    const item = document.createElement('div');
+                    item.className = 'next-date-item';
+                    item.style.animationDelay = `${found * 0.1}s`;
+                    item.innerText = `${checkDate.getDate()} (${trans.days[checkDate.getDay()]})`;
+                    nextList.appendChild(item);
+                    found++;
+                }
+                checkDate.setDate(checkDate.getDate() + 1);
+            }
+            document.getElementById('nextDatesSection').style.display = 'block';
+            document.getElementById('nextDatesSection').classList.add('show');
 
-        const grid = document.getElementById('weekGrid');
-        grid.innerHTML = '';
-        const startOfWeek = now.getDate() - now.getDay();
-        for (let i = 0; i < 7; i++) {
-            const date = new Date(new Date().setDate(startOfWeek + i));
-            const dNum = date.getDate();
-            const box = document.createElement('div');
-            box.className = 'date-box';
-            if (dNum === todayDate) box.classList.add('today-mark');
-            if ((dNum % 2 !== 0) === isPlateOdd) box.classList.add('active-date');
-            box.innerHTML = `<span>${trans.days[i]}</span><b>${dNum}</b>`;
-            grid.appendChild(box);
-        }
-        document.getElementById('calSection').classList.add('show');
+            const grid = document.getElementById('weekGrid');
+            grid.innerHTML = '';
+            const startOfWeek = now.getDate() - now.getDay();
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(new Date().setDate(startOfWeek + i));
+                const dNum = date.getDate();
+                const box = document.createElement('div'); 
+                box.className = 'date-box';
+                box.style.animation = `popIn 0.3s both ${i * 0.05}s`;
+                if (dNum === todayDate) box.classList.add('today-mark');
+                if ((dNum % 2 !== 0) === isPlateOdd) box.classList.add('active-date');
+                box.innerHTML = `<span>${trans.days[i]}</span><b>${dNum}</b>`;
+                grid.appendChild(box);
+            }
+            document.getElementById('calSection').style.display = 'block';
+            document.getElementById('calSection').classList.add('show');
+        }, 50);
     }
 </script>
 </body>
