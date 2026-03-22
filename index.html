@@ -7,6 +7,7 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Fuel Check">
     
     <style>
         :root {
@@ -20,325 +21,372 @@
             --bg-top: #000000;
             --bg-bottom: #1c1c1e;
             --switch-bg: rgba(255,255,255,0.12);
+            --modal-bg: #1c1c1e;
         }
 
         [data-theme="light"] {
-            --glass-bg: rgba(255, 255, 255, 0.45);
-            --glass-border: rgba(255, 255, 255, 0.5);
-            --text-main: #000000;
-            --text-muted: rgba(0, 0, 0, 0.5);
-            --bg-top: #f2f2f7;
+            --bg-top: #f0f2f5;
             --bg-bottom: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --glass-bg: rgba(0, 0, 0, 0.03);
+            --glass-border: rgba(0, 0, 0, 0.1);
             --switch-bg: rgba(0,0,0,0.08);
+            --modal-bg: #ffffff;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-            background: var(--bg-top);
+            background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
             color: var(--text-main);
             margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Changed from center to allow scrolling */
+            align-items: flex-start;
             min-height: 100vh;
-            transition: background 0.5s ease;
-            overflow-x: hidden;
+            padding-top: calc(10px + env(safe-area-inset-top));
+            padding-bottom: env(safe-area-inset-bottom);
             -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
         }
 
-        .liquid-bg { position: fixed; inset: 0; background: linear-gradient(135deg, var(--bg-top), var(--bg-bottom)); z-index: -1; }
-
-        .container {
-            margin: 40px 0;
-            width: 90%;
-            max-width: 380px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(45px) saturate(210%);
-            -webkit-backdrop-filter: blur(45px) saturate(210%);
-            border-radius: 40px;
-            padding: 1.8rem 1.4rem;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
-            gap: 20px; /* Increased gap to prevent crowding */
-            height: auto; /* Ensure container expands with content */
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
         }
 
-        .top-nav {
+        .header {
             display: flex;
             justify-content: space-between;
-            align-items: center; 
-            height: 40px;
+            align-items: center;
+            margin-bottom: 24px;
         }
 
-        .btn-lang-top {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--glass-border);
-            color: var(--text-main);
-            padding: 0 14px;
-            height: 36px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
+        .title-group { display: flex; align-items: center; gap: 8px; }
+        .title { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+        
+        .top-controls { display: flex; gap: 8px; align-items: center; }
 
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 68px; 
-            height: 34px;
-            background-color: var(--switch-bg);
+        .theme-switch {
+            background: var(--switch-bg);
             border-radius: 20px;
+            padding: 6px 10px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .lang-switch {
+            background: var(--switch-bg);
+            border-radius: 20px;
+            padding: 4px;
+            display: flex;
+            gap: 2px;
+        }
+
+        .lang-btn {
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            padding: 6px 8px;
+            border-radius: 16px;
+            font-size: 10px;
+            font-weight: 700;
             cursor: pointer;
         }
+        .lang-btn.active { background: var(--primary-blue); color: white; }
 
-        .switch input { display: none; }
-        .switch-ui { width: 100%; height: 100%; display: flex; align-items: center; position: relative; }
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
 
-        .switch-icons {
-            position: absolute;
-            width: 100%;
+        .clock-container {
             display: flex;
-            justify-content: space-around;
             align-items: center;
+            justify-content: center;
+            gap: 6px;
+            color: var(--text-muted);
             font-size: 14px;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .slider {
-            position: absolute;
-            height: 28px;
-            width: 28px;
-            left: 3px;
-            background-color: white;
-            border-radius: 50%;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 2;
-        }
-
-        input:checked + .switch-ui .slider { transform: translateX(34px); }
-
-        h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.05em; margin: 0; }
-        .clock { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
-
-        .input-box {
-            background: rgba(0, 0, 0, 0.1);
-            border: 1.5px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 1rem;
-            transition: 0.3s ease;
-        }
-
-        .input-box.success {
-            border-color: var(--success-green);
-            background: rgba(52, 199, 89, 0.05);
+            margin-bottom: 20px;
+            font-weight: 600;
         }
 
         input {
             width: 100%;
-            background: transparent;
-            border: none;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            border-radius: 18px;
+            padding: 16px;
+            box-sizing: border-box;
             color: var(--text-main);
-            font-size: 2.8rem;
-            font-weight: 800;
+            font-size: 32px;
+            font-weight: 700;
             text-align: center;
             outline: none;
-            letter-spacing: 4px;
+            transition: 0.3s;
+            margin-bottom: 20px;
+            appearance: none;
         }
+        [data-theme="light"] input { background: rgba(0,0,0,0.05); color: #000; }
+        input:focus { border-color: var(--primary-blue); background: rgba(255,255,255,0.1); }
 
-        .btn-check {
+        .btn-main {
             width: 100%;
             background: var(--primary-blue);
             color: white;
             border: none;
-            padding: 1.1rem;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 1rem;
+            border-radius: 18px;
+            padding: 18px;
+            font-size: 17px;
+            font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.1s ease;
         }
-        
-        .btn-check:active { transform: scale(0.97); }
+        .btn-main:active { transform: scale(0.98); }
 
         .status-msg {
-            padding: 1.2rem;
+            margin-top: 20px;
+            padding: 20px;
             border-radius: 20px;
-            display: none;
             font-weight: 700;
-            text-align: center;
-            font-size: 0.95rem;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .status-msg.show { display: flex; animation: slideUp 0.4s ease; }
+        .fuel-icon { font-size: 32px; }
+        
+        .can { background: rgba(52, 199, 89, 0.15); color: #34C759; border: 1px solid rgba(52, 199, 89, 0.3); }
+        .cannot { background: rgba(255, 59, 48, 0.15); color: #FF3B30; border: 1px solid rgba(255, 59, 48, 0.3); }
+
+        .section-title {
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin: 24px 0 12px 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .status-msg.show { display: block; animation: slideUp 0.4s ease-out; }
-        .can { background: rgba(52, 199, 89, 0.12); color: #34C759; border: 1px solid rgba(52, 199, 89, 0.2); }
-        .cannot { background: rgba(255, 59, 48, 0.12); color: #FF3B30; border: 1px solid rgba(255, 59, 48, 0.2); }
+        .date-list { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
+        .date-chip {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 12px 18px;
+            border-radius: 16px;
+            white-space: nowrap;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
 
-        .section-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+        .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+        .day-cell {
+            background: var(--glass-bg);
+            border-radius: 12px;
+            padding: 12px 0;
+            font-size: 10px;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            transition: 0.2s;
+        }
+        .day-cell b { font-size: 15px; color: var(--text-main); margin-top: 4px; }
+        .day-active { background: var(--primary-blue); color: white; border: none; }
+        .day-active b { color: white; }
         
-        .week-bar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-        .day-cell { background: rgba(255,255,255,0.04); border-radius: 10px; padding: 10px 0; text-align: center; position: relative; }
-        .day-cell span { font-size: 0.55rem; color: var(--text-muted); display: block; margin-bottom: 2px; }
-        .day-cell b { font-size: 0.85rem; }
-        .day-active { background: var(--primary-blue) !important; color: white !important; }
-        
-        .day-today { border: 1.5px solid var(--accent-gold); }
-        .day-today::after {
-            content: "TODAY";
+        .day-today { border: 2px solid var(--accent-gold); }
+        .day-today::before {
+            content: attr(data-today);
             position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
+            top: -10px;
             background: var(--accent-gold);
             color: black;
-            font-size: 0.45rem;
+            font-size: 7px;
             font-weight: 900;
-            padding: 1px 4px;
-            border-radius: 3px;
+            padding: 1px 5px;
+            border-radius: 4px;
         }
 
-        .date-grid { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-        .date-chip { background: var(--glass-bg); padding: 10px 14px; border-radius: 14px; font-size: 0.85rem; font-weight: 700; border: 1px solid var(--glass-border); flex: 1; min-width: 80px; text-align: center; }
-
-        /* Modal fixes */
+        /* Modal Styles */
         .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            padding: 20px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(5px);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
         }
-        
         .modal {
-            background: var(--bg-top);
-            border: 1px solid var(--glass-border);
-            padding: 2rem;
-            border-radius: 32px;
-            text-align: center;
-            width: 100%;
-            max-width: 280px;
+            background: var(--modal-bg); border: 1px solid var(--glass-border);
+            width: 280px; padding: 25px; border-radius: 24px; text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal h3 { margin: 0 0 10px 0; font-size: 18px; }
+        .modal p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; line-height: 1.4; }
+        .modal-btn { 
+            background: var(--primary-blue); color: white; border: none; 
+            padding: 12px 25px; border-radius: 14px; font-weight: 700; width: 100%;
+            cursor: pointer;
         }
 
-        @keyframes slideUp { from { transform: translateY(15px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body data-theme="dark">
 
-<div class="liquid-bg"></div>
-
-<div class="modal-overlay" id="errorModal">
+<div class="modal-overlay" id="alertModal">
     <div class="modal">
-        <h2 style="margin:0 0 10px; color:#FF3B30; font-size:1.2rem;">Attention</h2>
-        <p id="modalMsg" style="font-size:0.95rem; margin-bottom:1.5rem;">Enter 4 Digits Of Vehicle Number</p>
-        <button onclick="closeModal()" style="background:var(--primary-blue); color:white; border:none; padding:0.8rem 1.5rem; border-radius:14px; font-weight:700; width:100%;">OK</button>
+        <h3 id="modal-title">⚠️ Error</h3>
+        <p id="modal-body">Please enter all 4 digits of your vehicle number.</p>
+        <button class="modal-btn" onclick="closeModal()">OK</button>
     </div>
 </div>
 
-<div class="container">
-    <div class="top-nav">
-        <button class="btn-lang-top" onclick="toggleLang()" id="langBtn">සිංහල</button>
-        <label class="switch">
-            <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
-            <div class="switch-ui">
-                <div class="switch-icons"><span>🌙</span><span>☀️</span></div>
-                <span class="slider"></span>
-            </div>
-        </label>
-    </div>
-
-    <div>
-        <h1 id="ui-title">Fuel Check SL</h1>
-        <div id="clock" class="clock">00:00:00 AM</div>
-    </div>
-
-    <div class="input-section">
-        <div class="section-label" id="ui-input-label">Enter last 4 digits</div>
-        <div id="inputWrapper" class="input-box">
-            <input type="text" id="plateInput" maxlength="4" placeholder="0000" inputmode="numeric" oninput="validateInput(this)">
+<div class="app-container">
+    <div class="header">
+        <div class="title-group">
+            <span style="font-size: 24px;"></span>
+            <div class="title">Fuel Check SL</div>
         </div>
-        <button class="btn-check" onclick="handleCheck()" id="ui-btn" style="margin-top: 15px;">Check Eligibility</button>
+        <div class="top-controls">
+            <div class="theme-switch" onclick="toggleTheme()" id="themeSwitch">
+                <span id="t-icon">🌙</span>
+            </div>
+            <div class="lang-switch">
+                <button class="lang-btn active" onclick="setLang('en')" id="btn-en">EN</button>
+                <button class="lang-btn" onclick="setLang('si')" id="btn-si">සිං</button>
+                <button class="lang-btn" onclick="setLang('ta')" id="btn-ta">தழ்</button>
+            </div>
+        </div>
     </div>
 
-    <div id="status" class="status-msg"></div>
+    <div class="card">
+        <div class="clock-container">
+            <span>🕒</span>
+            <div id="clock">00:00:00 AM</div>
+        </div>
+        <input type="text" id="plateInput" maxlength="4" placeholder="••••" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, ''); hideStatus();">
+        <button class="btn-main" onclick="check()" id="btn-check">
+            <span>🔍</span> <span id="btn-text">Check Eligibility</span>
+        </button>
+        <div id="status" class="status-msg">
+            <div id="fuel-icon" class="fuel-icon">⛽</div>
+            <div id="status-text"></div>
+        </div>
+    </div>
 
     <div id="nextDatesSec" style="display:none">
-        <div class="section-label" id="ui-next-label">Next Open Dates</div>
-        <div class="date-grid" id="nextDatesList"></div>
+        <div class="section-title">
+            <span>📅</span> <span id="lbl-next">Next Eligible Dates</span>
+        </div>
+        <div class="date-list" id="nextDatesList"></div>
     </div>
-    
+
     <div id="calSec" style="display:none">
-        <div class="section-label" id="ui-cal-label">Weekly Schedule</div> <br>
-        <div class="week-bar" id="weekGrid"></div>
+        <div class="section-title">
+            <span>🗓️</span> <span id="lbl-cal">Weekly Overview</span> 
+        </div> <br>
+        <div class="week-grid" id="weekGrid"></div>
     </div>
 </div>
 
 <script>
-    let curLang = 0; 
-    const langs = ['en', 'si', 'ta'];
+    let lang = 'en';
     const ui = {
-        en: { input: "Enter last 4 digits", btn: "Check Eligibility", can: "Eligible Today", cannot: "Not Eligible Today", days: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], next: "Next Open Dates", cal: "Weekly Schedule", btnLabel: "සිංහල", modal: "Enter 4 Digits Of Vehicle Number" },
-        si: { input: "අවසාන ඉලක්කම් 4 ඇතුළත් කරන්න", btn: "පරීක්ෂා කරන්න", can: "අද අවසර ඇත", cannot: "අද අවසර නැත", days: ['ඉරි','සඳු','අඟ','බදා','බ්‍රහ','සිකු','සෙන'], next: "ඊළඟ දිනයන්", cal: "සතිපතා කාලසටහන", btnLabel: "தமிழ்", modal: "වාහන අංකයේ අවසාන ඉලක්කම් 4 ඇතුළත් කරන්න" },
-        ta: { input: "கடைசி 4 எண்களை இடவும்", btn: "பரிசோதிக்கவும்", can: "இன்று அனுமதி உண்டு", cannot: "இன்று அனுமதி இல்லை", days: ['ஞாயி','திங்','செவ்','புதன்','வியா','வெள்','சனி'], next: "அடுத்த தேதிகள்", cal: "வாராந்திர அட்டவணை", btnLabel: "English", modal: "வாகன எண்ணின் கடைசி 4 இலக்கங்களை உள்ளிடவும்" }
+        en: { 
+            check: "Check Eligibility", can: "Eligible for fuel today!", cannot: "Not eligible today.",
+            next: "Next Eligible Dates", cal: "Weekly Overview", today: "TODAY",
+            modalT: "Incomplete Number", modalB: "Please enter the last 4 digits of your vehicle registration number.",
+            days: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+        },
+        si: { 
+            check: "පරීක්ෂා කරන්න", can: "අද දින ඉන්ධන ලබාගත හැක!", cannot: "අද දින ලබාගත නොහැක.",
+            next: "ඊළඟට අවසර ඇති දින", cal: "සතිපතා කාලසටහන", today: "අද",
+            modalT: "අසම්පූර්ණ අංකයකි", modalB: "කරුණාකර ඔබගේ වාහන අංකයේ අවසාන ඉලක්කම් 4ම ඇතුළත් කරන්න.",
+            days: ['ඉරිදා','සඳුදා','අඟහ','බදාදා','බ්‍රහස්','සිකු','සෙන']
+        },
+        ta: { 
+            check: "பரிசோதிக்கவும்", can: "இன்று நீங்கள் பெறலாம்!", cannot: "இன்று பெற முடியாது.",
+            next: "அடுத்த தேதிகள்", cal: "வாராந்திர அட்டவணை", today: "இன்று",
+            modalT: "அரைகுறை எண்", modalB: "உங்கள் வாகனப் பதிவு எண்ணின் கடைசி 4 இலக்கங்களை உள்ளிடவும்.",
+            days: ['ஞாயி','திங்','செவ்','புதன்','வியா','வெள்','சனி']
+        }
     };
 
     function updateClock() {
-        document.getElementById('clock').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        const now = new Date();
+        document.getElementById('clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
     }
-    setInterval(updateClock, 1000); updateClock();
-
-    function validateInput(el) { 
-        el.value = el.value.replace(/[^0-9]/g, ''); 
-        const wrapper = document.getElementById('inputWrapper');
-        if (el.value.length === 4) {
-            wrapper.classList.add('success');
-        } else {
-            wrapper.classList.remove('success');
-            document.getElementById('status').classList.remove('show');
-            document.getElementById('nextDatesSec').style.display = 'none';
-            document.getElementById('calSec').style.display = 'none';
-        }
-    }
+    setInterval(updateClock, 1000);
+    updateClock();
 
     function toggleTheme() {
-        const isLight = document.getElementById('themeToggle').checked;
-        document.body.setAttribute('data-theme', isLight ? 'light' : 'dark');
+        const body = document.body;
+        const current = body.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        body.setAttribute('data-theme', next);
+        document.getElementById('t-icon').innerText = next === 'dark' ? '🌙' : '☀️';
     }
 
-    function toggleLang() {
-        curLang = (curLang + 1) % 3;
-        const t = ui[langs[curLang]];
-        document.getElementById('ui-input-label').innerText = t.input;
-        document.getElementById('langBtn').innerText = t.btnLabel;
-        document.getElementById('ui-btn').innerText = t.btn;
-        document.getElementById('ui-next-label').innerText = t.next;
-        document.getElementById('ui-cal-label').innerText = t.cal;
-        document.getElementById('modalMsg').innerText = t.modal;
-        if(document.getElementById('status').classList.contains('show')) handleCheck();
+    function setLang(l) {
+        lang = l;
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`btn-${l}`).classList.add('active');
+        document.getElementById('btn-text').innerText = ui[l].check;
+        document.getElementById('lbl-next').innerText = ui[l].next;
+        document.getElementById('lbl-cal').innerText = ui[l].cal;
+        if(document.getElementById('status').classList.contains('show')) check();
     }
 
-    function closeModal() { document.getElementById('errorModal').style.display = 'none'; }
+    function closeModal() { document.getElementById('alertModal').style.display = 'none'; }
 
-    function handleCheck() {
-        const val = document.getElementById('plateInput').value.trim();
-        const t = ui[langs[curLang]];
-        
-        if (val.length < 4) {
-            document.getElementById('errorModal').style.display = 'flex';
+    function hideStatus() { document.getElementById('status').classList.remove('show'); }
+
+    function check() {
+        const val = document.getElementById('plateInput').value;
+        if(val.length < 4) {
+            document.getElementById('modal-title').innerText = ui[lang].modalT;
+            document.getElementById('modal-body').innerText = ui[lang].modalB;
+            document.getElementById('alertModal').style.display = 'flex';
             return;
         }
 
         const isOdd = parseInt(val.slice(-1)) % 2 !== 0;
         const now = new Date();
-        const matches = (isOdd === (now.getDate() % 2 !== 0));
-        
+        const matches = (now.getDate() % 2 !== 0) === isOdd;
+        const t = ui[lang];
+
         const status = document.getElementById('status');
-        status.innerText = matches ? `✓ ${t.can}` : `✕ ${t.cannot}`;
+        const statusText = document.getElementById('status-text');
+        const fuelIcon = document.getElementById('fuel-icon');
+        
+        statusText.innerText = matches ? t.can : t.cannot;
+        fuelIcon.innerText = matches ? "✅" : "❌";
         status.className = `status-msg show ${matches ? 'can' : 'cannot'}`;
 
         const nextList = document.getElementById('nextDatesList');
@@ -347,7 +395,7 @@
         while (found < 3) {
             if ((d.getDate() % 2 !== 0) === isOdd) {
                 const chip = document.createElement('div'); chip.className = 'date-chip';
-                chip.innerText = `${d.getDate()} ${t.days[d.getDay()]}`;
+                chip.innerHTML = `<span style="font-size:10px; color:var(--text-muted)">${t.days[d.getDay()]}</span><span>${d.getDate()} ${new Intl.DateTimeFormat(lang, {month:'short'}).format(d)}</span>`;
                 nextList.appendChild(chip); found++;
             }
             d.setDate(d.getDate() + 1);
@@ -356,15 +404,19 @@
 
         const grid = document.getElementById('weekGrid');
         grid.innerHTML = '';
-        const start = now.getDate() - now.getDay();
+        const startOfWeek = now.getDate() - now.getDay();
         for (let i = 0; i < 7; i++) {
-            const date = new Date(new Date().setDate(start + i));
+            const date = new Date(new Date().setDate(startOfWeek + i));
             const dNum = date.getDate();
-            const cell = document.createElement('div'); cell.className = 'day-cell';
-            if (dNum === now.getDate()) cell.classList.add('day-today');
-            if ((dNum % 2 !== 0) === isOdd) cell.classList.add('day-active');
-            cell.innerHTML = `<span>${t.days[i]}</span><b>${dNum}</b>`;
-            grid.appendChild(cell);
+            const box = document.createElement('div');
+            box.className = 'day-cell';
+            if (dNum === now.getDate()) {
+                box.classList.add('day-today');
+                box.setAttribute('data-today', t.today);
+            }
+            if ((dNum % 2 !== 0) === isOdd) box.classList.add('day-active');
+            box.innerHTML = `<span>${t.days[i]}</span><b>${dNum}</b>`;
+            grid.appendChild(box);
         }
         document.getElementById('calSec').style.display = 'block';
     }
